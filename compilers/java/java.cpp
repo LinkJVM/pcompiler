@@ -25,16 +25,10 @@ OutputList Java::transform(const QStringList& input, const Options& options) con
 	QProcess compiler;
 	QProcessEnvironment compilerEnvironment;
 	
-	compilerEnvironment.insert("BOOTCLASSPATH", "/usr/share/jamvm/classes.zip:\
-		/usr/share/classpath/glibj.zip:\
-		/usr/lib/linkjvm-java.jar:\
-		/usr/share/classpath/tools.zip");
-	compilerEnvironment.insert("CLASSPATH", "/usr/share/jamvm/classes.zip:\
-		/usr/share/classpath/glibj.zip:\
-		/usr/lib/linkjvm-java.jar:\
-		/usr/share/classpath/tools.zip:.");
+	compilerEnvironment.insert("BOOTCLASSPATH", "/usr/share/jamvm/classes.zip:/usr/share/classpath/glibj.zip:/usr/lib/linkjvm-java.jar:usr/share/classpath/tools.zip");
+	compilerEnvironment.insert("CLASSPATH", "/usr/share/jamvm/classes.zip:/usr/share/classpath/glibj.zip:/usr/lib/linkjvm-java.jar:/usr/share/classpath/tools.zip:.");
 	compilerEnvironment.insert("LD_LIBRARY_PATH", "/usr/lib/classpath");
-		
+	
 	compiler.setProcessEnvironment(compilerEnvironment);
 	
 	QString rawFlags = options[JAVAC_FLAGS].trimmed();
