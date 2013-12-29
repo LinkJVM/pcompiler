@@ -44,6 +44,7 @@ OutputList Java::transform(const QStringList& input, const Options& options) con
 	ret.setOutput(compiler.readAllStandardOutput());
 	ret.setError(compiler.readAllStandardError());
 	ret.setGeneratedFiles(QStringList(input).replaceInStrings(QRegExp("\\.java$"), ".class"));
+	ret.setTerminal(true);
 	
 	return OutputList() << ret;
 }
