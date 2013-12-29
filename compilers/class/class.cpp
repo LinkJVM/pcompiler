@@ -6,6 +6,7 @@
 #include <QFileInfo>
 #include <QProcess>
 #include <QDebug>
+#include <QProcessEnvironment>
 
 using namespace Compiler;
 
@@ -20,6 +21,20 @@ OutputList Class::transform(const QStringList& input, const Options& options) co
 	ret.setFiles(input);
 	
 	QProcess compiler;
+	QProcessEnvironment compilerEnvironment(QProcessEnvironment::systemEnvironment());
+	
+	compilerEnvironment.insert("BOOTCLASSPATH", "/usr/share/jamvm/classes.zip:\
+		/usr/share/classpath/glibj.zip:\
+		/usr/lib/linkjvm-java.jar:\
+		/usr/share/classpath/tools.zip");
+	compilerEnvironment.insert("CLASSPATH", "/usr/share/jamvm/classes.zip:\
+		/usr/share/classpath/glibj.zip:\
+		/usr/lib/linkjvm-java.jar:\
+		/usr/share/classpath/tools.zip:.");
+	compilerEnvironment.insert("LD_LIBRARY_PATH", "/usr/lib/classpath");
+		
+	compiler.setProcessEnvironment(compilerEnvironment);
+	
 	QString output = (options.contains(OUTPUT_DIR) ? options[OUTPUT_DIR] : QFileInfo(input[0]).absolutePath() + "/a.jar");
 	
 	compiler.start(jarPath(), (QStringList() << "cvf" << output) + input);

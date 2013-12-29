@@ -6,6 +6,7 @@
 #include <QFileInfo>
 #include <QProcess>
 #include <QDebug>
+#include <QProcessEnvironment>
 
 using namespace Compiler;
 
@@ -22,6 +23,19 @@ OutputList Java::transform(const QStringList& input, const Options& options) con
 	ret.setFiles(input);
 	
 	QProcess compiler;
+	QProcessEnvironment compilerEnvironment(QProcessEnvironment::systemEnvironment());
+	
+	compilerEnvironment.insert("BOOTCLASSPATH", "/usr/share/jamvm/classes.zip:\
+		/usr/share/classpath/glibj.zip:\
+		/usr/lib/linkjvm-java.jar:\
+		/usr/share/classpath/tools.zip");
+	compilerEnvironment.insert("CLASSPATH", "/usr/share/jamvm/classes.zip:\
+		/usr/share/classpath/glibj.zip:\
+		/usr/lib/linkjvm-java.jar:\
+		/usr/share/classpath/tools.zip:.");
+	compilerEnvironment.insert("LD_LIBRARY_PATH", "/usr/lib/classpath");
+		
+	compiler.setProcessEnvironment(compilerEnvironment);
 	
 	QString rawFlags = options[JAVAC_FLAGS].trimmed();
 	QStringList flags = OptionParser::arguments(rawFlags);
