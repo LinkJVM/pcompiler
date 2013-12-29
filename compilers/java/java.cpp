@@ -23,7 +23,7 @@ OutputList Java::transform(const QStringList& input, const Options& options) con
 	ret.setFiles(input);
 	
 	QProcess compiler;
-	QProcessEnvironment compilerEnvironment(QProcessEnvironment::systemEnvironment());
+	QProcessEnvironment compilerEnvironment;
 	
 	compilerEnvironment.insert("BOOTCLASSPATH", "/usr/share/jamvm/classes.zip:\
 		/usr/share/classpath/glibj.zip:\
