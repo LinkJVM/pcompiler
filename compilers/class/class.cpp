@@ -29,9 +29,13 @@ OutputList Class::transform(const QStringList& input, const Options& options, co
 		
 	compiler.setProcessEnvironment(compilerEnvironment);
 	
-	QString output = (options.contains(OUTPUT_DIR) ? options[OUTPUT_DIR] : QFileInfo(input[0]).absolutePath() + "/a.jar");
-	
-	compiler.start(jarPath(), (QStringList() << "cvf" << output) + input);
+	QString output = (options.contains(OUTPUT_DIR) ? options[OUTPUT_DIR] + ".jar" : QFileInfo(input[0]).absolutePath() + "/a.jar");
+	if(program->hasPreference("main_class")){
+		compiler.start(jarPath(), (QStringList() << "cvef" << program->getPreference("main_class") << output) + input);
+	}
+	else{
+		compiler.start(jarPath(), (QStringList() << "cvf" << output) + input);
+	}
 	if(!compiler.waitForStarted()) {
 		ret = Output(Platform::ccPath(), 1, "", "error: Couldn't start the java archiver.");
 		return OutputList() << ret;
@@ -42,7 +46,7 @@ OutputList Class::transform(const QStringList& input, const Options& options, co
 	ret.setOutput(compiler.readAllStandardOutput());
 	ret.setError(compiler.readAllStandardError());
 	ret.setGeneratedFiles(QStringList() << output);
-	
+	ret.setTerminal(true);
 	return OutputList() << ret;
 }
 
