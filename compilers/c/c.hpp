@@ -17,7 +17,7 @@ namespace Compiler
 	public:
 		C();
 		
-		virtual OutputList transform(const QStringList& input, const Options& options, const kiss::KarPtr program) const;
+		virtual OutputList transform(const QStringList& input, const Options& options, const kiss::KarPtr program = 0) const;
 	private:
 		Output transform(const QString& file, const Options& options) const;
 	};
