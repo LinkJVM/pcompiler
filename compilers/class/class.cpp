@@ -15,7 +15,7 @@ Class::Class()
 {
 }
 
-OutputList Class::transform(const QStringList& input, const Options& options, const kiss:KarPtr program) const
+OutputList Class::transform(const QStringList& input, const Options& options, const kiss::KarPtr program) const
 {
 	Output ret;
 	ret.setFiles(input);
