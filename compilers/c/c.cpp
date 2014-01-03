@@ -1,7 +1,7 @@
 #include "c.hpp"
 #include "pcompiler/compilers.hpp"
 #include "../common/platform.hpp"
-#include "../common/options.hpp"
+#include "pcompiler/compiler_options.hpp"
 
 #include <QFileInfo>
 #include <QProcess>
@@ -9,11 +9,19 @@
 
 using namespace Compiler;
 
-#define C_FLAGS "C_FLAGS"
-
 H::H()
 	: Passthrough("h", QStringList() << "h")
 {}
+
+OutputList H::transform(const QStringList &input, Options &options) const
+{
+	Output ret;
+	ret.setFiles(input);
+	ret.setExitCode(0);
+	ret.setGeneratedFiles(input);
+	ret.setTerminal(Output::HeaderTerminal);
+	return OutputList() << ret;
+}
 
 REGISTER_COMPILER(H)
 
@@ -22,35 +30,44 @@ C::C()
 {
 }
 
-OutputList C::transform(const QStringList& input, const Options& options, const kiss::KarPtr& program) const
+OutputList C::transform(const QStringList& input, Options& options, const kiss::KarPtr& program) const
 {
+	options.insert(C_FLAGS, options.value(C_FLAGS).toString() + " \"-I${USER_ROOT}/include\"");
+	options.expand();
+
+	Options::const_iterator it = options.find(PLATFORM_C_FLAGS);
+	if(it != options.end()) {
+		options.insert(C_FLAGS, options.value(C_FLAGS).toString() + " " + it.value().toString());
+	}
+
 	OutputList ret;
-	foreach(const QString& file, input) ret << transform(file, options);
+	foreach(const QString &file, input) ret << transform(file, options);
 	return ret;
 }
 
-Output C::transform(const QString& file, const Options& options) const
+Output C::transform(const QString &file, Options &options) const
 {
+	QProcess compiler;
 	Output ret;
 	QFileInfo fileInfo(file);
 	ret.setFile(file);
 	
-	QProcess compiler;
-	
-	QString output = options.contains(TEMPORARY_DIR) ? options[TEMPORARY_DIR] : fileInfo.absolutePath();
+	QString output = options.contains(TEMPORARY_DIR) ? options[TEMPORARY_DIR].toString() : fileInfo.absolutePath();
 	output += "/" + fileInfo.fileName() + ".o";
 
-	QString rawFlags = options[C_FLAGS].trimmed();
+	QString rawFlags = options[C_FLAGS].toString().trimmed();
 	QStringList flags = OptionParser::arguments(rawFlags);
-	// qDebug() << "Starting compile with" << (flags << "-c" << file << "-o" << output);
-	compiler.start(Platform::ccPath(), flags << "-c" << file << "-o" << output);
+	qDebug () << "CALLING C COMPILER WITH FLAGS:" << flags << "-c" << file << "-o" << output;
+	compiler.start(Platform::ccPath(), flags <<
+#ifndef _WIN32
+		"-fPIC" <<
+#endif
+		"-c" << file << "-o" << output);
 	if(!compiler.waitForStarted()) {
-		ret = Output(Platform::ccPath(), 1, "", "error: Couldn't start the C compiler.\n");
+		ret = Output(Platform::ccPath(), 1, "", "error: couldn't start the C compiler\n");
 		return ret;
 	}
 	compiler.waitForFinished();
-
-	qDebug() << "gcc exited with" << compiler.exitCode();
 	
 	ret.setExitCode(compiler.exitCode());
 	ret.setOutput(compiler.readAllStandardOutput());

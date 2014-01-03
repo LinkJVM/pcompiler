@@ -10,6 +10,8 @@ namespace Compiler
 	{
 	public:
 		Hpp();
+
+		virtual OutputList transform(const QStringList &input, Options &options) const;
 	};
 	
 	class Cpp : public Base
@@ -17,9 +19,9 @@ namespace Compiler
 	public:
 		Cpp();
 		
-		virtual OutputList transform(const QStringList& input, const Options& options, const kiss::KarPtr& program) const;
+		virtual OutputList transform(const QStringList& input, Options& options, const kiss::KarPtr& program) const;
 	private:
-		Output transform(const QString& file, const Options& options) const;
+		Output transform(const QString &file, Options &options) const;
 	};
 }
 

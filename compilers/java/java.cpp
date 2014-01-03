@@ -1,7 +1,7 @@
 #include "java.hpp"
 #include "pcompiler/compilers.hpp"
 #include "../common/platform.hpp"
-#include "../common/options.hpp"
+#include "pcompiler/compiler_options.hpp"
 
 #include <QFileInfo>
 #include <QProcess>
@@ -10,14 +10,12 @@
 
 using namespace Compiler;
 
-#define JAVAC_FLAGS "JAVAC_FLAGS"
-
 Java::Java()
 	: Base("java", QStringList() << "java", 0, QStringList() << JAVAC_FLAGS << TEMPORARY_DIR)
 {
 }
 
-OutputList Java::transform(const QStringList& input, const Options& options, const kiss::KarPtr& program) const
+OutputList Java::transform(const QStringList& input, Options& options, const kiss::KarPtr& program) const
 {
 	Output ret;
 	ret.setFiles(input);
@@ -31,11 +29,11 @@ OutputList Java::transform(const QStringList& input, const Options& options, con
 	
 	compiler.setProcessEnvironment(compilerEnvironment);
 	
-	QString rawFlags = options[JAVAC_FLAGS].trimmed();
+	QString rawFlags = options[JAVAC_FLAGS].toString().trimmed();
 	QStringList flags = OptionParser::arguments(rawFlags);
 	compiler.start(javacPath(), flags + input);
 	if(!compiler.waitForStarted()) {
-		ret = Output(Platform::ccPath(), 1, "", "error: Couldn't start the java compiler.");
+		ret = Output(Platform::ccPath(), 1, "", "error: couldn't start the Java compiler");
 		return OutputList() << ret;
 	}
 	compiler.waitForFinished();

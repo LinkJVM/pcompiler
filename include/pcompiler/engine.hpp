@@ -5,6 +5,7 @@
 #include "output.hpp"
 #include "input.hpp"
 #include "progress.hpp"
+#include "compat.hpp"
 
 #include <kar.hpp>
 
@@ -13,7 +14,7 @@
 
 namespace Compiler
 {
-	class Engine
+	class DLL_EXPORT Engine
 	{
 	public:
 		Engine();
@@ -24,7 +25,7 @@ namespace Compiler
 		void addCompilers(const QList<const Base *>& compilers);
 		void removeCompiler(const Base *compiler);
 		
-		OutputList compile(const Input& input, const kiss::KarPtr& program = kiss::Kar::create(), const Options& options = Options(), Progress *progress = 0) const;
+		OutputList compile(const Input& input, const kiss::KarPtr& program = kiss::Kar::create(), Options& options = Options(), Progress *progress = 0) const;
 		
 	private:
 		QList<const Base *> m_compilers;

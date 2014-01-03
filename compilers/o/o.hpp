@@ -10,8 +10,10 @@ namespace Compiler
 	public:
 		O();
 		
-		virtual OutputList transform(const QStringList& input, const Options& options, const kiss::KarPtr& program) const;
+		virtual OutputList transform(const QStringList& input, Options& options, const kiss::KarPtr& program) const;
 	private:
+		Output produceBinary(const QStringList &input, Options &options) const;
+		Output produceLibrary(const QStringList &input, Options &options) const;
 	};
 }
 

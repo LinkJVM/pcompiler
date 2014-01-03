@@ -6,6 +6,26 @@
 
 using namespace Compiler;
 
+QString Platform::platform()
+{
+#ifdef Q_OS_WIN
+	return "WIN";
+#elif defined(Q_OS_MAC)
+	return "MAC";
+#else
+	return "NIX";
+#endif
+}
+
+QString Platform::arPath()
+{
+#ifndef Q_OS_WIN
+	return "/usr/bin/ar";
+#else
+	return QDir::currentPath() + "/../MinGW/bin/ar";
+#endif
+}
+
 QString Platform::ccPath()
 {
 #ifndef Q_OS_WIN
@@ -24,13 +44,31 @@ QString Platform::cppPath()
 #endif
 }
 
+QString Platform::libPrefix()
+{
+#ifdef Q_OS_WIN
+	return "";
+#else
+	return "lib";
+#endif
+}
+
+QString Platform::libExtension()
+{
+#ifdef Q_OS_WIN
+	return "dll";
+#elif defined(Q_OS_MAC)
+	return "dylib";
+#else
+	return "so";
+#endif
+}
+
 QString Platform::exeExtension()
 {
-	return
 #ifdef Q_OS_WIN
-	"exe"
+	return "exe";
 #else
-	""
+	return "";
 #endif
-	;
 }

@@ -46,17 +46,15 @@ void Engine::removeCompiler(const Base *compiler)
 	m_compilers.removeAll(compiler);
 }
 
-OutputList Engine::compile(const Input& input, const kiss::KarPtr& program, const Options& options, Progress *progress) const
+OutputList Engine::compile(const Input& input, const kiss::KarPtr& program, Options& options, Progress *progress) const
 {
 	Input workingInput(input);
 	QList<const Base *> workingCompilers(m_compilers);
-	Options opt;
+	foreach(const Base *base, workingCompilers)
+		qDebug() << "compiler:" << base->name();
 	OutputList ret;
 	
-	qDebug() << workingCompilers.size() << "compilers";
-	foreach(const Base *compiler, workingCompilers) {
-		qDebug() << compiler->name();
-	}
+	options.expand();
 	
 	double processed = 0;
 	while(!workingCompilers.isEmpty()) {
@@ -75,7 +73,7 @@ OutputList Engine::compile(const Input& input, const kiss::KarPtr& program, cons
 			qDebug() << "Calling compiler" << compiler->name() << "with" << applicableInput;
 			OutputList outList = compiler->transform(applicableInput, options, program);
 			foreach(const Output& out, outList) {
-				if(!out.isSuccess()) return outList;
+				if(!out.isSuccess()) return ret + outList;
 				workingInput += out.generatedFiles().toSet();
 			}
 			ret += outList;

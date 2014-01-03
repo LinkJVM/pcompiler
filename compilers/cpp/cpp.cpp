@@ -1,7 +1,7 @@
 #include "cpp.hpp"
 #include "pcompiler/compilers.hpp"
 #include "../common/platform.hpp"
-#include "../common/options.hpp"
+#include "pcompiler/compiler_options.hpp"
 
 #include <QFileInfo>
 #include <QProcess>
@@ -9,11 +9,19 @@
 
 using namespace Compiler;
 
-#define CPP_FLAGS "CPP_FLAGS"
-
 Hpp::Hpp()
 	: Passthrough("h++", QStringList() << "hpp" << "hxx" << "hh")
 {}
+
+OutputList Hpp::transform(const QStringList &input, Options &options) const
+{
+	Output ret;
+	ret.setFiles(input);
+	ret.setExitCode(0);
+	ret.setGeneratedFiles(input);
+	ret.setTerminal(Output::HeaderTerminal);
+	return OutputList() << ret;
+}
 
 REGISTER_COMPILER(Hpp)
 
@@ -22,29 +30,40 @@ Cpp::Cpp()
 {
 }
 
-OutputList Cpp::transform(const QStringList& input, const Options& options, const kiss::KarPtr& program) const
+OutputList Cpp::transform(const QStringList& input, Options& options, const kiss::KarPtr& program) const
 {
+	options.insert(CPP_FLAGS, options.value(CPP_FLAGS).toString() + " \"-I${USER_ROOT}/include\"");
+	options.expand();
+	
+	Options::const_iterator it = options.find(PLATFORM_CPP_FLAGS);
+	if(it != options.end()) {
+		options.insert(CPP_FLAGS, options.value(CPP_FLAGS).toString() + " " + it.value().toString());
+	}
+
 	OutputList ret;
-	foreach(const QString& file, input) ret << transform(file, options);
+	foreach(const QString &file, input) ret << transform(file, options);
 	return ret;
 }
 
-Output Cpp::transform(const QString& file, const Options& options) const
+Output Cpp::transform(const QString &file, Options &options) const
 {
+	QProcess compiler;
 	Output ret;
 	QFileInfo fileInfo(file);
 	ret.setFile(file);
 	
-	QProcess compiler;
-	
-	QString output = options.contains(TEMPORARY_DIR) ? options[TEMPORARY_DIR] : fileInfo.absolutePath();
+	QString output = options.contains(TEMPORARY_DIR) ? options[TEMPORARY_DIR].toString() : fileInfo.absolutePath();
 	output += "/" + fileInfo.fileName() + ".o";
 
-	QString rawFlags = options[CPP_FLAGS].trimmed();
+	QString rawFlags = options[CPP_FLAGS].toString().trimmed();
 	QStringList flags = OptionParser::arguments(rawFlags);
-	compiler.start(Platform::cppPath(), flags << "-c" << file << "-o" << output);
+	compiler.start(Platform::cppPath(), flags <<
+#ifndef _WIN32
+		"-fPIC" <<
+#endif
+		"-c" << file << "-o" << output);
 	if(!compiler.waitForStarted()) {
-		ret = Output(Platform::ccPath(), 1, "", "error: Couldn't start the C++ compiler.\n");
+		ret = Output(Platform::ccPath(), 1, "", "error: couldn't start the C++ compiler\n");
 		return ret;
 	}
 	compiler.waitForFinished();

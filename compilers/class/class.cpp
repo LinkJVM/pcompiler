@@ -1,7 +1,7 @@
 #include "class.hpp"
 #include "pcompiler/compilers.hpp"
 #include "../common/platform.hpp"
-#include "../common/options.hpp"
+#include "pcompiler/compiler_options.hpp"
 
 #include <QFileInfo>
 #include <QProcess>
@@ -15,7 +15,7 @@ Class::Class()
 {
 }
 
-OutputList Class::transform(const QStringList& input, const Options& options, const kiss::KarPtr& program) const
+OutputList Class::transform(const QStringList& input, Options& options, const kiss::KarPtr& program) const
 {
 	Output ret;
 	ret.setFiles(input);
@@ -37,7 +37,7 @@ OutputList Class::transform(const QStringList& input, const Options& options, co
 		compiler.start(jarPath(), (QStringList() << "cvf" << output) + input);
 	}
 	if(!compiler.waitForStarted()) {
-		ret = Output(Platform::ccPath(), 1, "", "error: Couldn't start the java archiver.");
+		ret = Output(Platform::ccPath(), 1, "", "error: couldn't start the java archiver");
 		return OutputList() << ret;
 	}
 	compiler.waitForFinished();

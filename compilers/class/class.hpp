@@ -9,7 +9,7 @@ namespace Compiler
 	{
 	public:
 		Class();
-		virtual OutputList transform(const QStringList& input, const Options& options, const kiss::KarPtr& program) const;
+		virtual OutputList transform(const QStringList& input, Options& options, const kiss::KarPtr& program) const;
 	private:
 		static QString jarPath();
 	};
