@@ -46,7 +46,7 @@ void Engine::removeCompiler(const Base *compiler)
 	m_compilers.removeAll(compiler);
 }
 
-OutputList Engine::compile(const Input& input, const kiss::KarPtr& program, Options& options, Progress *progress) const
+OutputList Engine::compile(const Input& input, Options& options, Progress *progress, const kiss::KarPtr& program) const
 {
 	Input workingInput(input);
 	QList<const Base *> workingCompilers(m_compilers);
