@@ -22,7 +22,7 @@ C::C()
 {
 }
 
-OutputList C::transform(const QStringList& input, const Options& options, const kiss::KarPtr program) const
+OutputList C::transform(const QStringList& input, const Options& options, const kiss::KarPtr& program) const
 {
 	OutputList ret;
 	foreach(const QString& file, input) ret << transform(file, options);
