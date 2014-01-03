@@ -17,7 +17,7 @@ Java::Java()
 {
 }
 
-OutputList Java::transform(const QStringList& input, const Options& options, const kiss::KarPtr program) const
+OutputList Java::transform(const QStringList& input, const Options& options, const kiss::KarPtr& program) const
 {
 	Output ret;
 	ret.setFiles(input);

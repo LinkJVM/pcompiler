@@ -16,7 +16,7 @@ Python::Python()
 {
 }
 
-OutputList Python::transform(const QStringList& input, const Options& options, const kiss::KarPtr program) const
+OutputList Python::transform(const QStringList& input, const Options& options, const kiss::KarPtr& program) const
 {
 	Output ret;
 	ret.setExitCode(1);

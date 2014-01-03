@@ -16,7 +16,7 @@ O::O()
 {
 }
 
-OutputList O::transform(const QStringList& input, const Options& options, const kiss::KarPtr program) const
+OutputList O::transform(const QStringList& input, const Options& options, const kiss::KarPtr& program) const
 {
 	Output ret;
 	ret.setFiles(input);
