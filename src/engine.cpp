@@ -46,7 +46,7 @@ void Engine::removeCompiler(const Base *compiler)
 	m_compilers.removeAll(compiler);
 }
 
-OutputList Engine::compile(const Input& input, const Options& options, Progress *progress) const
+OutputList Engine::compile(const Input& input, const kiss::KarPtr program, const Options& options, Progress *progress) const
 {
 	Input workingInput(input);
 	QList<const Base *> workingCompilers(m_compilers);
@@ -73,7 +73,7 @@ OutputList Engine::compile(const Input& input, const Options& options, Progress 
 		}
 		if(!applicableInput.isEmpty()) {
 			qDebug() << "Calling compiler" << compiler->name() << "with" << applicableInput;
-			OutputList outList = compiler->transform(applicableInput, options);
+			OutputList outList = compiler->transform(applicableInput, options, program);
 			foreach(const Output& out, outList) {
 				if(!out.isSuccess()) return outList;
 				workingInput += out.generatedFiles().toSet();

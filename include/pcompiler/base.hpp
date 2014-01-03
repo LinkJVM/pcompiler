@@ -8,6 +8,7 @@
 #include <QString>
 #include <QStringList>
 #include <QFuture>
+#include <kar.hpp>
 
 namespace Compiler
 {
@@ -16,7 +17,7 @@ namespace Compiler
 	public:
 		Base(const QString& name, const QStringList& extensions, const int& precedence, const QStringList& flags = QStringList());
 		
-		virtual OutputList transform(const QStringList& input, const Options& options) const = 0;
+		virtual OutputList transform(const QStringList& input, const Options& options, const kiss::KarPtr program) const = 0;
 		
 		const QString& name() const;
 		const QStringList& extensions() const;

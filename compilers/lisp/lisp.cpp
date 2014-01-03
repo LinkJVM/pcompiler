@@ -16,7 +16,7 @@ Lisp::Lisp()
 {
 }
 
-OutputList Lisp::transform(const QStringList& input, const Options& options) const
+OutputList Lisp::transform(const QStringList& input, const Options& options, const kiss::KarPtr program) const
 {
 	Output ret;
 	ret.setExitCode(1);

@@ -29,7 +29,7 @@ OutputList C::transform(const QStringList& input, const Options& options) const
 	return ret;
 }
 
-Output C::transform(const QString& file, const Options& options) const
+Output C::transform(const QString& file, const Options& options, const kiss::KarPtr program) const
 {
 	Output ret;
 	QFileInfo fileInfo(file);

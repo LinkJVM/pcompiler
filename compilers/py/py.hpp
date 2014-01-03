@@ -10,7 +10,7 @@ namespace Compiler
 	public:
 		Python();
 		
-		virtual OutputList transform(const QStringList& input, const Options& options) const;
+		virtual OutputList transform(const QStringList& input, const Options& options, const kiss::KarPtr program) const;
 	private:
 	};
 }
